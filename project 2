@@ -1,0 +1,88 @@
+# Load the necessary libraries
+library(ggplot2)
+
+# Load the dataset
+activity_data <- read.csv("activity.csv")
+
+
+# Convert the date column to Date type
+activity_data$date <- as.Date(activity_data$date, format="%Y-%m-%d")
+
+
+# Aggregate the total steps per day
+total_steps_per_day <- aggregate(steps ~ date, data=activity_data, sum, na.rm=TRUE)
+
+
+# Plot the histogram
+ggplot(total_steps_per_day, aes(x=steps)) +
+  geom_histogram(binwidth=1000, fill="blue", color="black") +
+  labs(title="Total Number of Steps Taken Each Day", x="Steps", y="Frequency")
+
+
+# Calculate the mean and median
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+
+# Print the results
+mean_steps
+median_steps
+
+
+# Calculate the mean and median
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+
+# Print the results
+mean_steps
+median_steps
+
+
+# Calculate the mean and median
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+
+# Print the results
+mean_steps
+median_steps
+
+
+# Calculate the number of missing values
+total_na <- sum(is.na(activity_data$steps))
+total_na
+# Strategy: Fill NA with the mean for that 5-minute interval
+activity_data_imputed <- activity_data
+na_intervals <- which(is.na(activity_data_imputed$steps))
+activity_data_imputed$steps[na_intervals] <- sapply(na_intervals, function(x) {
+  interval <- activity_data_imputed$interval[x]
+  mean(activity_data$steps[activity_data$interval == interval], na.rm=TRUE)
+})
+
+# Aggregate the total steps per day for the imputed dataset
+total_steps_per_day_imputed <- aggregate(steps ~ date, data=activity_data_imputed, sum)
+
+# Plot the histogram
+ggplot(total_steps_per_day_imputed, aes(x=steps)) +
+  geom_histogram(binwidth=1000, fill="green", color="black") +
+  labs(title="Total Number of Steps Taken Each Day (Imputed Data)", x="Steps", y="Frequency")
+
+# Calculate the mean and median
+mean_steps_imputed <- mean(total_steps_per_day_imputed$steps)
+median_steps_imputed <- median(total_steps_per_day_imputed$steps)
+
+# Print the results
+mean_steps_imputed
+median_steps_imputed
+
+# Create the weekday/weekend factor variable
+activity_data_imputed$day_type <- ifelse(weekdays(activity_data_imputed$date) %in% c('Saturday', 'Sunday'), 'weekend', 'weekday')
+
+# Calculate the average steps for each interval and day type
+average_steps_day_type <- aggregate(steps ~ interval + day_type, data=activity_data_imputed, mean)
+
+# Plot the panel plot
+ggplot(average_steps_day_type, aes(x=interval, y=steps)) +
+  geom_line(color="blue") +
+  facet_wrap(~ day_type, ncol=1) +
+  labs(title="Average Number of Steps per Interval by Day Type", x="5-minute Interval", y="Average Steps")
+
+
